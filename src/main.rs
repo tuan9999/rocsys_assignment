@@ -23,25 +23,30 @@ fn handle_event(event: DebouncedEvent) {
     }
 }
 
-fn main() {
-    let app = Input::parse();
-    println!("{:?}", app.directories);
-
+fn monitor_directories(input: &Input) {
     // Create a channel to receive the events.
     let (tx, rx) = channel();
-
+    
     // Create a watcher object, delivering debounced events.
     // The notification back-end is selected based on the platform.
     let mut watcher = watcher(tx, Duration::from_secs(0)).unwrap();
-
+    
     // Add a path to be watched. All files and directories at that path and
     // below will be monitored for changes.
-    watcher.watch(app.directories[0].clone(), RecursiveMode::Recursive).unwrap();
-
+    for directory in &input.directories {
+        watcher.watch(directory.clone(), RecursiveMode::Recursive).unwrap();
+    }
+    
     loop {
         match rx.recv() {
            Ok(event) => handle_event(event),
            Err(e) => println!("watch error: {:?}", e),
         }
     }
+}
+
+fn main() {
+    let input = Input::parse();
+    println!("{:?}", input.directories);
+    monitor_directories(&input)
 }
