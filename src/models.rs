@@ -70,6 +70,7 @@ impl DirectoryMonitor {
                 .unwrap();
         }
 
+        println!("Monitoring directories: {:?}", self.input.directories);
         loop {
             match rx.recv() {
                 Ok(event) => self.handle_event(event),
