@@ -62,12 +62,12 @@ impl DirectoryMonitor {
     pub fn monitor_directories(&mut self) {
         let (tx, rx) = channel();
 
-        let mut watcher = watcher(tx, Duration::from_secs(0)).unwrap();
+        let mut watcher = watcher(tx, Duration::from_secs(0)).expect("Error initialising watcher");
 
         for directory in &self.input.directories {
             watcher
                 .watch(directory.clone(), RecursiveMode::Recursive)
-                .unwrap();
+                .expect("Error adding directory to watcher");
         }
 
         println!("Monitoring directories: {:?}", self.input.directories);
